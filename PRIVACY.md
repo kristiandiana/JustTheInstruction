@@ -36,4 +36,4 @@ We do not store any user data. All accessed content is processed in real-time an
 We may update this Privacy Policy from time to time. Any changes will be posted here.
 
 7. Contact
-If you have questions about this policy, please contact us at: [your email address]
+If you have questions about this policy, please contact us at: iainhm3235@gmail.com
