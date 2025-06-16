@@ -1,7 +1,7 @@
 {
   "name": "Just The Instructions",
   "manifest_version": 3,
-  "version": "1.0",
+  "version": "2.0",
   "description": "Filters recipe websites to just show the instructions",
   "author": "Kristian and Iain",
   "icons": {
