@@ -30,7 +30,8 @@
         "ort-backend/ort.wasm.min.js",
         "ort-backend/ort-wasm.wasm",
         "ort-backend/ort-wasm-simd.wasm",
-        "ort-backend/ort-wasm-simd.jsep.wasm"
+        "ort-backend/ort-wasm-simd.jsep.wasm",
+        "images/cookie.png"
       ],
       "matches": ["<all_urls>"]
     }
