@@ -40,7 +40,7 @@ def generate():
     # Enforce daily limit
     if record:
         if record['date'] == today:
-            if record['count'] >= 3:
+            if record['count'] >= 100:
                 return jsonify({ "error": "Daily GPT limit reached (3/day)" }), 429
             record['count'] += 1
         else:
