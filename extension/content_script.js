@@ -218,7 +218,7 @@ function createFloatingUI(pageTitle, autoExtract = false) {
     font-size: 0.875rem;
     transition: all 0.2s ease;
   ">
-    ✨ Fetch Instructions
+    ✨ Extract Instructions
   </button>
   <div id="gpt-spinner" style="
     display: none;
@@ -285,13 +285,70 @@ function createFloatingUI(pageTitle, autoExtract = false) {
     display: none;
     justify-content: center;
     align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 16px;
     width: 100%;
     pointer-events: none;
   ">
-    <div style="width: 24px; height: 24px; border: 3px solid #d1d5db; border-top: 3px solid #1f2937; border-radius: 9999px; animation: spin 0.8s linear infinite;"></div>
-    <p style="font-size: 0.875rem; color: #4b5563; margin: 0;">Extracting instructions...</p>
+    <div style="
+      width: 48px;
+      height: 48px;
+      position: relative;
+    ">
+      <!-- Animated document icon -->
+      <div style="
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #2563eb;
+        border-radius: 8px;
+        transform-origin: bottom center;
+        animation: pulse 1.5s ease-in-out infinite;
+      "></div>
+      <!-- Fold corner -->
+      <div style="
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 16px 16px 0;
+        border-color: transparent #1e40af transparent transparent;
+      "></div>
+      <!-- Lines in document -->
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      ">
+        ${Array(5)
+          .fill(
+            '<div style="height: 3px; background: white; border-radius: 2px;"></div>'
+          )
+          .join("")}
+      </div>
+    </div>
+    <p style="
+      font-size: 0.875rem;
+      color: #4b5563;
+      margin: 0;
+      font-weight: 500;
+    ">Extracting instructions...</p>
   </div>
+    <style>
+    @keyframes pulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(0.95) rotate(-1deg); }
+      50% { transform: scale(1.05) rotate(1deg); }
+      75% { transform: scale(0.98) rotate(-0.5deg); }
+    }
+  </style>
 
     </div>
   `;
@@ -417,7 +474,6 @@ async function extractInstructions(toggleVisible = true, skipNotify = false) {
     : document.body.textContent.trim().length < 200;
 
   if (isNonContentPage || hasMinimalContent) {
-    console.log("[Content] Skipping non-content page");
     return;
   }
 
@@ -740,17 +796,70 @@ async function toggleFloatingUI() {
         if (data.response?.trim()) {
           if (instructionsContainer)
             instructionsContainer.style.display = "block";
+
           output.innerHTML = `
-    <div style="
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 0.875rem;
+  <style>
+.markdown h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 1.25rem 0 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.25rem;
+}
+
+.markdown h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 1rem 0 0.5rem;
+}
+
+.markdown h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0.75rem 0 0.4rem;
+}
+
+
+    .markdown p {
+      margin: 0.4rem 0;
       line-height: 1.6;
-      color: #374151;
-    ">
-      ${marked.parse(data.response)}
-    </div>
-  `;
-          scoreLabel.textContent = `✅ GPT completed analysis`;
+    }
+
+    .markdown ul, .markdown ol {
+      margin: 0.5rem 0 0.5rem 1.25rem;
+      padding-left: 1rem;
+    }
+
+    .markdown ul {
+      list-style-type: disc;
+    }
+
+    .markdown ol {
+      list-style-type: decimal;
+    }
+
+    .markdown li {
+      margin-bottom: 0.25rem;
+    }
+
+    .markdown li > ul {
+      list-style-type: circle;
+      margin-top: 0.25rem;
+    }
+
+    .markdown strong {
+      font-weight: 600;
+    }
+  </style>
+  <div class="markdown" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">
+    ${marked.parse(data.response)}
+  </div>
+`;
+
+          scoreLabel.textContent = `✅ JustTheInstructions AI finished`;
         } else {
           if (instructionsContainer)
             instructionsContainer.style.display = "block";
@@ -785,7 +894,7 @@ async function toggleFloatingUI() {
 `;
           output.style.display = "block";
         }
-        scoreLabel.textContent = "❌ Error calling GPT";
+        scoreLabel.textContent = "❌ Error calling JustTheInstructions AI";
       }
     };
   }
