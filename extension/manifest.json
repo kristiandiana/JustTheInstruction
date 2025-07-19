@@ -5,9 +5,9 @@
   "description": "Filters recipe websites to just show the instructions",
   "author": "Kristian and Iain",
   "icons": {
-    "16": "images/cookie.png",
-    "48": "images/cookie.png",
-    "128": "images/cookie.png"
+    "16": "images/logobig.png",
+    "48": "images/logobig.png",
+    "128": "images/logobig.png"
   },
   "content_scripts": [
     {
@@ -31,7 +31,8 @@
         "ort-backend/ort-wasm.wasm",
         "ort-backend/ort-wasm-simd.wasm",
         "ort-backend/ort-wasm-simd.jsep.wasm",
-        "images/cookie.png"
+        "images/logo.png",
+        "images/logobig.png"
       ],
       "matches": ["<all_urls>"]
     }
@@ -49,6 +50,6 @@
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "action": {
-    "default_icon": "images/cookie.png"
+    "default_icon": "images/logobig.png"
   }
 }

@@ -211,7 +211,7 @@ function createFloatingUI(pageTitle, autoExtract = false) {
   <div id="gpt-action-container" style="margin-top: 0px; margin-bottom: 0px; padding: 0 1.5rem; display: flex; justify-content: center;">
     <div id="gpt-action-wrapper" style="display: flex; justify-content: center;">
       <button id="generate-with-gpt" style="
-      margin-top: 0px;
+      margin-top: 10px;
         background-color: #3B82F6;
         color: white;
         padding: 12px 20px;
@@ -226,7 +226,7 @@ function createFloatingUI(pageTitle, autoExtract = false) {
     margin-top: 50px;
     align-items: center;
     justify-content: center;
-    width: 260px; /* Wider container for progress bar */
+    width: 520px; /* Wider container for progress bar */
   ">
     <div style="
       width: 100%; 
@@ -749,10 +749,10 @@ async function toggleFloatingUI() {
     <p class="${color} font-semibold mb-1">
       ${
         tier === "strong"
-          ? "✅ Strong Instructions"
+          ? "✅ Strong Instructions Detected"
           : tier === "moderate"
-          ? "⚠️ Some Instructions"
-          : "❌ No Instructions"
+          ? "⚠️ Some Instructions Detected"
+          : "❌ No Instructions Detected"
       }
     </p>
     <button id="toggle-reasoning" class="text-sm text-blue-600 underline cursor-pointer">
@@ -815,23 +815,29 @@ async function toggleFloatingUI() {
 
         let progress = 0;
 
-        const animate = () => {
+        let lastTime = null;
+
+        const animate = (timestamp) => {
           if (progress >= 100) return;
 
-          // Increment progress
-          progress += Math.random() * 1 + 0.5;
+          if (!lastTime) lastTime = timestamp;
+          const delta = timestamp - lastTime;
+          lastTime = timestamp;
+
+          // Vary the speed, but scale it with delta for smoother motion
+          const speed = Math.random() * 0.025 + 0.01; // tweak for desired feel
+          progress += speed * delta;
           progress = Math.min(progress, 100);
 
           // Update positions
           fill.style.width = progress + "%";
           clipboard.style.left = `calc(${progress}% - 12px)`;
 
-          // Continue animation
-          setTimeout(animate, 10 + Math.random() * 15);
+          requestAnimationFrame(animate);
         };
 
         // Start animation
-        animate();
+        requestAnimationFrame(animate);
       }
 
       try {
