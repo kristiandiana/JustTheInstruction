@@ -60,7 +60,7 @@ We collected over **1000 high-quality entries** from each of these instructional
 
 All data was collected via **custom web scraping** using BeautifulSoup and processed using Pandas — no third-party datasets were used. The model was then trained using TensorFlow and deployed in ONNX/TensorFlow.js format for frontend usage.
 
-📄 **Colab Notebooks:**
+📄 **Colab Notebooks (if you're interested in diving deeper):**
 
 - [Model Architecture & Training](https://colab.research.google.com/drive/1nkqleu9FP2pN5D40q1NK_xuyOvsKG7vy?usp=sharing)
 - [Data Collection & Scraping Pipeline](https://colab.research.google.com/drive/1k1D4zRW0nFicjkS-KqtCVW3y4mn8qSJR?usp=sharing)
@@ -95,4 +95,9 @@ All data was collected via **custom web scraping** using BeautifulSoup and proce
   ⭐️ <strong>Found this useful?</strong> — <a href="https://github.com/kristiandiana/justtheinstruction">Star this repo</a>  
   <br />
   📝 <strong>Help others discover it</strong> — <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn">Leave a review on the Chrome Web Store</a>
+  <br/>
+  <br/>
+    <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn">
+    <img src="https://img.shields.io/badge/⬇️ Install from Chrome Web Store-0A66C2?style=for-the-badge&logo=googlechrome&logoColor=white" />
+  </a>
 </p>
