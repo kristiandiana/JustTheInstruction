@@ -29,7 +29,7 @@ async function animateExtension(tabId, url) {
     // Create notification
     await chrome.notifications.create("instruction-notification", {
       type: "basic",
-      iconUrl: chrome.runtime.getURL("images/cookie.png"),
+      iconUrl: chrome.runtime.getURL("images/logobig.png"),
       title: "Instructions Available!",
       message: "Click to analyze this page",
       priority: 2,

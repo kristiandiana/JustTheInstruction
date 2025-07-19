@@ -208,9 +208,10 @@ function createFloatingUI(pageTitle, autoExtract = false) {
     autoExtract
       ? ""
       : `
-  <div id="gpt-action-container" style="margin-top: 32px; margin-bottom: 24px; padding: 0 1.5rem; display: flex; justify-content: center;">
+  <div id="gpt-action-container" style="margin-top: 0px; margin-bottom: 0px; padding: 0 1.5rem; display: flex; justify-content: center;">
     <div id="gpt-action-wrapper" style="display: flex; justify-content: center;">
       <button id="generate-with-gpt" style="
+      margin-top: 10px;
         background-color: #3B82F6;
         color: white;
         padding: 12px 20px;
@@ -218,22 +219,120 @@ function createFloatingUI(pageTitle, autoExtract = false) {
     font-size: 0.875rem;
     transition: all 0.2s ease;
   ">
-    ✨ Fetch Instructions
-  </button>
+    ✨ Extract Instructions  </button>
   <div id="gpt-spinner" style="
     display: none;
-    margin-left: 12px;
+    margin-left: 16px;
+    margin-top: 50px;
     align-items: center;
     justify-content: center;
+    width: 520px; /* Wider container for progress bar */
   ">
     <div style="
-      width: 24px;
-      height: 24px;
-      border: 3px solid #d1d5db;
-      border-top: 3px solid #1f2937;
-      border-radius: 9999px;
-      animation: spin 0.8s linear infinite;
-    "></div>
+      width: 100%; 
+      height: 28px; 
+      position: relative;
+    ">
+      <!-- Progress Bar Track -->
+      <div style="
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+      ">
+        <!-- Progress Fill -->
+        <div id="progress-fill" style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 0%;
+          background: linear-gradient(270deg, #3B82F6, #60A5FA, #3B82F6);
+          background-size: 200% 200%;
+          animation: pulse 2s ease infinite;
+          border-radius: 4px;
+          transition: width 0.5s ease;
+        "></div>
+      </div>
+      
+      <!-- Moving Clipboard -->
+      <div id="moving-clipboard" style="
+        position: absolute;
+        top: -20px;
+        left: 0;
+        width: 24px;
+        height: 28px;
+        background: #3B82F6;
+        border-radius: 3px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        transform-origin: center;
+        animation: miniPulse 1.2s ease-in-out infinite;
+        transition: left 0.5s ease;
+      ">
+        <!-- Top clip -->
+        <div style="
+          position: absolute;
+          top: -3px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 12px;
+          height: 6px;
+          background: #1E40AF;
+          border-radius: 2px 2px 0 0;
+        "></div>
+        <!-- Lines -->
+        <div style="
+          position: absolute;
+          top: 6px;
+          left: 4px;
+          width: 16px;
+          height: 2px;
+          background: white;
+          opacity: 0.8;
+          animation: lineFade 1.2s ease-in-out infinite;
+        "></div>
+        <div style="
+          position: absolute;
+          top: 12px;
+          left: 4px;
+          width: 14px;
+          height: 2px;
+          background: white;
+          opacity: 0.6;
+          animation: lineFade 1.2s ease-in-out 0.2s infinite;
+        "></div>
+        <div style="
+          position: absolute;
+          top: 18px;
+          left: 4px;
+          width: 18px;
+          height: 2px;
+          background: white;
+          opacity: 0.7;
+          animation: lineFade 1.2s ease-in-out 0.4s infinite;
+        "></div>
+      </div>
+    </div>
+    <style>
+      @keyframes miniPulse {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        30% { transform: scale(1.05) rotate(2deg); }
+        60% { transform: scale(0.95) rotate(-2deg); }
+      }
+      @keyframes lineFade {
+        0%, 100% { opacity: 0.4; width: 12px; }
+        50% { opacity: 0.9; width: 18px; }
+      }
+      @keyframes pulse {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+    </style>
   </div>
 </div>
 
@@ -277,23 +376,9 @@ function createFloatingUI(pageTitle, autoExtract = false) {
 
   </div>
 
-<div id="loading-indicator" style="
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    pointer-events: none;
-  ">
-    <div style="width: 24px; height: 24px; border: 3px solid #d1d5db; border-top: 3px solid #1f2937; border-radius: 9999px; animation: spin 0.8s linear infinite;"></div>
-    <p style="font-size: 0.875rem; color: #4b5563; margin: 0;">Extracting instructions...</p>
-  </div>
+</div>
 
-    </div>
+
   `;
   shadow.appendChild(container);
 
@@ -380,6 +465,7 @@ function createFloatingUI(pageTitle, autoExtract = false) {
 
   return shadow;
 }
+
 async function extractInstructions(toggleVisible = true, skipNotify = false) {
   const pageTitle = document.title || window.location.href;
   const currentUrl = window.location.href;
@@ -417,7 +503,6 @@ async function extractInstructions(toggleVisible = true, skipNotify = false) {
     : document.body.textContent.trim().length < 200;
 
   if (isNonContentPage || hasMinimalContent) {
-    console.log("[Content] Skipping non-content page");
     return;
   }
 
@@ -429,12 +514,32 @@ async function extractInstructions(toggleVisible = true, skipNotify = false) {
     shadow = createFloatingUI(pageTitle);
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
-
   const loading = shadow?.querySelector("#loading-indicator");
   const output = shadow?.querySelector("#instructions-text");
   const scoreLabel = shadow?.querySelector("#average-score");
+  const floatingContainer = shadow?.querySelector("#floating-container");
 
-  if (loading) loading.style.display = "block";
+  if (loading) {
+    loading.style.display = "flex";
+
+    // Add overlay for better visibility
+    const overlay = document.createElement("div");
+    overlay.id = "loading-overlay";
+    overlay.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.7);
+      z-index: 5;
+      border-radius: 0.75rem;
+    `;
+    if (floatingContainer && !shadow.querySelector("#loading-overlay")) {
+      floatingContainer.appendChild(overlay);
+    }
+  }
+
   //if (output) output.style.display = "none";
   if (output) output.innerHTML = "";
   if (scoreLabel) scoreLabel.textContent = "";
@@ -468,8 +573,12 @@ async function extractInstructions(toggleVisible = true, skipNotify = false) {
         matchedBlocks.push({ text: rawText, confidence: score });
       }
     }
-
     if (loading) loading.style.display = "none";
+    // Remove the loading overlay if it exists
+    const overlay = shadow?.querySelector("#loading-overlay");
+    if (overlay && overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay);
+    }
     if (output) output.style.display = "block";
 
     const hitRate = instructionElements / totalElements;
@@ -482,7 +591,10 @@ async function extractInstructions(toggleVisible = true, skipNotify = false) {
     let header = "";
     let instructionTier = "none";
 
-    if (instructionElements >= 15 && hitRate >= 0.2 && avgConfidence >= 0.45) {
+    if (
+      (instructionElements >= 15 && hitRate >= 0.2 && avgConfidence >= 0.45) ||
+      (hitRate >= 0.25 && avgConfidence >= 0.35)
+    ) {
       header = "✅ Strong Instructional Content Detected";
       instructionTier = "strong";
     } else if (
@@ -592,11 +704,18 @@ async function extractInstructions(toggleVisible = true, skipNotify = false) {
     }
   } catch (error) {
     if (loading) loading.style.display = "none";
+    clearTimeout(animationTimeoutId);
+    // Remove the loading overlay if it exists
+    const overlay = shadow?.querySelector("#loading-overlay");
+    if (overlay && overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay);
+    }
     if (output)
       output.textContent =
         "❌ Error during model run. See console for details.";
   }
 }
+
 async function toggleFloatingUI() {
   const pageTitle = document.title || window.location.href;
   const currentUrl = window.location.href;
@@ -630,10 +749,10 @@ async function toggleFloatingUI() {
     <p class="${color} font-semibold mb-1">
       ${
         tier === "strong"
-          ? "✅ Strong Instructions"
+          ? "✅ Strong Instructions Detected"
           : tier === "moderate"
-          ? "⚠️ Some Instructions"
-          : "❌ No Instructions"
+          ? "⚠️ Some Instructions Detected"
+          : "❌ No Instructions Detected"
       }
     </p>
     <button id="toggle-reasoning" class="text-sm text-blue-600 underline cursor-pointer">
@@ -684,12 +803,49 @@ async function toggleFloatingUI() {
         "#instructions-text-container"
       );
 
+      // ADDED: Start progress animation for GPT extraction
+      const spinner = shadowRoot.querySelector("#gpt-spinner");
+      const fill = spinner?.querySelector("#progress-fill");
+      const clipboard = spinner?.querySelector("#moving-clipboard");
+
+      if (spinner && fill && clipboard) {
+        // Reset positions
+        fill.style.width = "0%";
+        clipboard.style.left = "0px";
+
+        let progress = 0;
+
+        let lastTime = null;
+
+        const animate = (timestamp) => {
+          if (progress >= 100) return;
+
+          if (!lastTime) lastTime = timestamp;
+          const delta = timestamp - lastTime;
+          lastTime = timestamp;
+
+          // Vary the speed, but scale it with delta for smoother motion
+          const speed = Math.random() * 0.025 + 0.01; // tweak for desired feel
+          progress += speed * delta;
+          progress = Math.min(progress, 100);
+
+          // Update positions
+          fill.style.width = progress + "%";
+          clipboard.style.left = `calc(${progress}% - 12px)`;
+
+          requestAnimationFrame(animate);
+        };
+
+        // Start animation
+        requestAnimationFrame(animate);
+      }
+
       try {
         // Show loading state
         if (gptBtn) gptBtn.style.display = "none";
         if (gptSpinner) gptSpinner.style.display = "flex";
         if (scoreLabel)
-          scoreLabel.textContent = "Extracting only what you need...";
+          scoreLabel.innerHTML = `<p class="font-semibold text-blue-600">🔍 Extracting instructions with AI. This will only take a few seconds...</p>`;
 
         // Get page content
         const pageText = Array.from(
@@ -702,9 +858,9 @@ async function toggleFloatingUI() {
         // Get user ID
         const { userId } = await chrome.storage.local.get("userId");
 
-        // Call API
+        // Call API "https://instructions-api-2-561360507997.us-central1.run.app/generate"
         const response = await fetch(
-          "https://instructions-api-2-561360507997.us-central1.run.app/generate",
+          "https://instructions-api-2-561360507997.us-central1.run.app/generate", // Use local API for development
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -715,19 +871,28 @@ async function toggleFloatingUI() {
           }
         );
 
-        const data = await response.json();
-
-        // Process response
-        if (gptSpinner) gptSpinner.style.display = "none";
+        const data = await response.json(); // Process response
+        if (gptSpinner) {
+          // Smooth fadeout for the spinner
+          gptSpinner.style.opacity = "1";
+          gptSpinner.style.transition = "opacity 0.3s ease";
+          gptSpinner.style.opacity = "0";
+          setTimeout(() => {
+            gptSpinner.style.display = "none";
+          }, 300);
+        }
         if (gptBtn) gptBtn.remove();
 
-        // Hide container if both elements are gone
-        if (
-          gptContainer &&
-          !gptContainer.querySelector("#generate-with-gpt") &&
-          !gptContainer.querySelector("#gpt-spinner[style*='flex']")
-        ) {
-          gptContainer.style.display = "none";
+        // Hide the entire action container to remove the blank space
+        if (gptContainer) {
+          gptContainer.style.transition = "opacity 0.3s ease, margin 0.3s ease";
+          gptContainer.style.opacity = "0";
+          gptContainer.style.marginTop = "0";
+          gptContainer.style.marginBottom = "0";
+          setTimeout(() => {
+            gptContainer.style.display = "none";
+            gptContainer.style.height = "0";
+          }, 300);
         }
 
         if (response.status === 429) {
@@ -740,17 +905,70 @@ async function toggleFloatingUI() {
         if (data.response?.trim()) {
           if (instructionsContainer)
             instructionsContainer.style.display = "block";
+
           output.innerHTML = `
-    <div style="
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 0.875rem;
+  <style>
+.markdown h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0.25rem 0 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.25rem;
+}
+
+.markdown h2 {
+  font-size: 1.25rem;
+  font-weight: 600;d
+  color: #1f2937;
+  margin: 1rem 0 0.5rem;
+}
+
+.markdown h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0.75rem 0 0.4rem;
+}
+
+
+    .markdown p {
+      margin: 0.4rem 0;
       line-height: 1.6;
-      color: #374151;
-    ">
-      ${marked.parse(data.response)}
-    </div>
-  `;
-          scoreLabel.textContent = `✅ GPT completed analysis`;
+    }
+
+    .markdown ul, .markdown ol {
+      margin: 0.5rem 0 0.5rem 1.25rem;
+      padding-left: 1rem;
+    }
+
+    .markdown ul {
+      list-style-type: disc;
+    }
+
+    .markdown ol {
+      list-style-type: decimal;
+    }
+
+    .markdown li {
+      margin-bottom: 0.25rem;
+    }
+
+    .markdown li > ul {
+      list-style-type: circle;
+      margin-top: 0.25rem;
+    }
+
+    .markdown strong {
+      font-weight: 600;
+    }
+  </style>
+  <div class="markdown" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem;">
+    ${marked.parse(data.response)}
+  </div>
+`;
+
+          scoreLabel.textContent = `✅ JustTheInstructions AI finished`;
         } else {
           if (instructionsContainer)
             instructionsContainer.style.display = "block";
@@ -769,8 +987,26 @@ async function toggleFloatingUI() {
           scoreLabel.textContent = `⚠️ GPT returned empty result`;
         }
       } catch (err) {
-        if (gptSpinner) gptSpinner.style.display = "none";
+        if (gptSpinner) {
+          // Smooth fadeout for the spinner even on error
+          gptSpinner.style.opacity = "1";
+          gptSpinner.style.transition = "opacity 0.3s ease";
+          gptSpinner.style.opacity = "0";
+          setTimeout(() => {
+            gptSpinner.style.display = "none";
+          }, 300);
+        }
+
+        // On error, show the button again but still clean up the container layout
         if (gptBtn) gptBtn.style.display = "inline-block";
+
+        // In case of repeated errors, make sure the container is properly visible
+        if (gptContainer) {
+          gptContainer.style.display = "flex";
+          gptContainer.style.opacity = "1";
+          gptContainer.style.marginTop = "32px";
+          gptContainer.style.marginBottom = "24px";
+        }
         if (output) {
           output.innerHTML = `
   <div style="
@@ -785,7 +1021,7 @@ async function toggleFloatingUI() {
 `;
           output.style.display = "block";
         }
-        scoreLabel.textContent = "❌ Error calling GPT";
+        scoreLabel.textContent = "❌ Error calling JustTheInstructions AI";
       }
     };
   }

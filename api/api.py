@@ -27,6 +27,7 @@ usage_tracker = {}
 # ------------------------
 @app.route("/generate", methods=["POST"])
 def generate():
+
     data = request.get_json()
     user_id = data.get("userId")
     raw_html_or_text = data.get("prompt", "")  # you're sending the whole page here
@@ -40,7 +41,7 @@ def generate():
     # Enforce daily limit
     if record:
         if record['date'] == today:
-            if record['count'] >= 100:
+            if record['count'] >= 3:
                 return jsonify({ "error": "Daily GPT limit reached (3/day)" }), 429
             record['count'] += 1
         else:
@@ -50,21 +51,31 @@ def generate():
 
     # GPT prompt instructions
     system_prompt = (
-        "You are an instruction extraction engine. "
-        "Given a webpage or article, return ONLY the core step-by-step instructions "
-        "in plain, clear language. Do NOT include intros, background, commentary, or fluff. "
-        "Include all details needed to replicate the task exactly, even if they appear deep in the text. "
-        "Number each step clearly if applicable. Keep formatting clean."
+        "You are an instruction extraction engine for a Chrome extension called 'Just the Instructions'.\n"
+        "Given a full webpage or article, extract only the actionable instructions in clear, plain language.\n"
+        "Format the output in clean, structured **Markdown**.\n\n"
+        "Your output should include, when applicable:\n"
+        "- A **title** (brief and descriptive)\n"
+        "- A **Prerequisites** section (e.g., ingredients, tools, materials) should have [quantities/measurements] and servings / total batch size if applicable\n"
+        "- A **Steps** section with clearly numbered steps\n\n"
+        "You **may** use icons or emojis (e.g., ✅🧰🔥🥄) to enhance clarity or improve visual appeal — use them sparingly and only when they improve understanding.\n\n"
+        "⚠️ Do **not** include introductions, summaries, background info, commentary, or filler text.\n"
+        "Focus strictly on what's needed to replicate the task.\n\n"
+        "If general care instructions are provided (such as storage), include them in the **Steps** section.\n"
     )
 
     try:
+        # log just the gpt call time to complete
+
         response = client.chat.completions.create(
-            model="gpt-4o",  # or gpt-4-turbo / gpt-3.5-turbo
+            model="gpt-4.1-nano",  # or gpt-4-turbo / gpt-3.5-turbo
             messages=[
                 { "role": "system", "content": system_prompt },
                 { "role": "user", "content": raw_html_or_text }
             ],
         )
+        # Log the time taken for the request
+
         return jsonify({ "response": response.choices[0].message.content.strip() })
     except Exception as e:
         return jsonify({ "error": str(e) }), 500
