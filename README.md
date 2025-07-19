@@ -92,7 +92,7 @@ All data was collected via **custom web scraping** using BeautifulSoup and proce
 ---
 
 <p align="center">
-  ⭐️ <strong>Found this useful?</strong> — <a href="https://github.com/kristiandiana/justtheinstruction">Star this repo</a>  
+  ⭐️ <strong>Found this useful?</strong> — <a href="https://github.com/kristiandiana/justtheinstructions">Star this repo</a>  
   <br />
   📝 <strong>Help others discover it</strong> — <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn">Leave a review on the Chrome Web Store</a>
   <br/>
