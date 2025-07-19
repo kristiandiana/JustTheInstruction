@@ -1,57 +1,89 @@
-# JustTheInstruction Chrome Extension
+<p align="center">
+  <img src="./extension/images/marquee.jpg" alt="JustTheInstruction Marquee"/>
+</p>
 
-## :bulb: Project Description
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn">
+    <img src="https://img.shields.io/badge/⬇️ Install from Chrome Web Store-0A66C2?style=for-the-badge&logo=googlechrome&logoColor=white" />
+  </a>
+</p>
 
-Isn't it the worst when you find a recipe online, but need to scroll down for what feels like hours to find the actual instructions? We too have been bothered by this issue and began to think of a solution. What if we could use AI to extract ***JustTheInstructions*** from any recipe, arts & crafts, or other DIY website?
+---
 
-Well, we built and trained an AI model to do just that, and the power of this tool is one click away thanks to our Google Chrome Extension!s
+## 💡 Project Description
 
-### Project Objectives
-1. Build a binary text classification model using TensorFlow.
-2. Scrape training data that covers a variety of instruction categories.
-3. Develop a Google Chrome extension that automatically reads an entire website and promptly provides the user with ***JustTheInstructions***.
+Isn't it the worst when you find a recipe online, but need to scroll down for what feels like hours to find the actual instructions? We too have been bothered by this issue and began to think of a solution. What if we could use AI to extract **_JustTheInstructions_** from any recipe, arts & crafts, or other DIY website?
 
-## :computer: Tech Stack
+Well, we built a custom AI model to do just that — and the power of this tool is one click away thanks to our Chrome Extension.
 
-<div style="text-align: center;">
-  <div style="font-size: 2em; font-weight: bold; text-decoration: underline; margin-bottom: 10px;">Frontend Framework</div>
-  <div style="font-size: 2em; font-weight: bold; text-decoration: underline; margin-bottom: 10px;">Backend Framework:</div>
-  <p style="display: flex; justify-content: center; align: center;">
-    <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python" />
-    <img src="https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white" alt="TensorFlow" />
-    <img src="https://img.shields.io/badge/Flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white" alt="Flask" />
-  </p>
-  <div style="font-size: 1.5em; font-weight: bold;">Data Processing:</div>
-  <p style="display: flex; justify-content: center;">
-    <img src="https://img.shields.io/badge/Pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas" />
-    <img src="https://img.shields.io/badge/NumPy-013243.svg?style=for-the-badge&logo=numpy&logoColor=white" alt="NumPy" />
-    <img src="https://img.shields.io/badge/BeautifulSoup-3776AB.svg?style=for-the-badge&logo=beautifulsoup&logoColor=white" alt="Beautiful Soup" />
-  </p>
-  <div style="font-size: 1.5em; font-weight: bold;">Hosting & Deployment Tools:</div>
-  <p style="display: flex; justify-content: center;">
-    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-    <img src="https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white" alt="Google Cloud" />
-    <img src="https://img.shields.io/badge/Google%20Cloud%20Run-4285F4.svg?style=for-the-badge&logo=googlecloudrun&logoColor=white" alt="Google Cloud Run" />
-  </p>
-</div>
+### 🧭 Project Objectives
 
+1. Build a lightweight binary text classification model using TensorFlow.
+2. Scrape and prepare high-quality data across a wide range of instruction-heavy content types.
+3. Run the model entirely on the user's browser using ONNX Runtime or TensorFlow.js.
+4. Use GPT-4.1-nano via a lightweight backend to cleanly format the extracted instructions for the end user.
 
+---
 
+## 🧠 How It Works
 
-## :wrench: Model Architecture & Training the Model
+Once installed, the extension continuously monitors websites in the background. Here's the flow:
 
-*Note: We built and trained our model on google colab!*
+- The entire content of a webpage is analyzed **locally** using our custom-trained classification model.
+- If a section of the page appears instructional, you'll receive a notification.
+- The identified content is then sent to our Flask-based backend (hosted on GCP) which calls **GPT-4.1-nano** to reformat the instructions into clear, clean Markdown — removing fluff and preserving only the useful steps.
 
-We decided to build an LSTM neural network using TensorFlow. The model performs binary text classification and is able to predict if text is "instructions" or is "not instructions". Click the following link to see the documented process. 
-**https://colab.research.google.com/drive/1nkqleu9FP2pN5D40q1NK_xuyOvsKG7vy?usp=sharing**
+> ⚡ The classification model runs fully in-browser — **no API calls, no backend, no cost**.  
+> 💬 The formatting step (GPT-4.1-nano) is handled server-side via a lightweight backend API we host using **Flask + Docker + GCP**.
 
-We used a variety of sources to collect training data for our model. Categories of sites we wanted the model to be able to determine include recipes, crafts, circuits, and other DIYs.
+> 🛑 While our model is very strong at identifying instruction-based content, we know that notifications can be a bit much sometimes — feel free to toggle them off from the extension’s settings UI 😎
 
-While many entries were collected from a public Kaggle dataset, we also did our own data scraping using the python library, **Beautiful Soup**. We were able to scrape ***over 1000 unique entries for each of the mentioned categories!*** To learn more about how we did this, click the link to view our google colab file that documents the data scraping process.
-**https://colab.research.google.com/drive/1k1D4zRW0nFicjkS-KqtCVW3y4mn8qSJR?usp=sharing**
+---
 
+## 📊 Data Collection & Training
 
-## :mag: Using the Model
-### You can find the isolate function in the [isolate.py](./api/isolate.py) file located in the `api` directory.
+We collected over **1000 high-quality entries** from each of these instructional categories:
 
-Given plaintext, we use the model to idetify only the section of the text that includes procedural writing (instructions), and isolate it from the surrounding irrelevant text. This was done by first splitting the website's plaintext into individual sentences. We then parsed through the individual sentences until the model predicted a value greater than our experimentally determined threshold value which markes the start of the instructions section. The isolate function then continues to append sentences to the section and have the model make a prediction. When a significant decrease in prediction was noticed (identified by the prediction of the previous section minus an experimentally determined buffer value), this marks the end of the instructions section. This section, consisting of ***JustTheInstructions***, is then returned to the user. 
+- 🍲 Recipes
+- 🎨 Crafts
+- 🔌 Circuits
+- 🧪 DIY Science
+- 🛠️ General Tutorials
+
+All data was collected via **custom web scraping** using BeautifulSoup and processed using Pandas — no third-party datasets were used. The model was then trained using TensorFlow and deployed in ONNX/TensorFlow.js format for frontend usage.
+
+📄 **Colab Notebooks:**
+
+- [Model Architecture & Training](https://colab.research.google.com/drive/1nkqleu9FP2pN5D40q1NK_xuyOvsKG7vy?usp=sharing)
+- [Data Collection & Scraping Pipeline](https://colab.research.google.com/drive/1k1D4zRW0nFicjkS-KqtCVW3y4mn8qSJR?usp=sharing)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer                | Tech                                                     |
+| -------------------- | -------------------------------------------------------- |
+| **Model**            | TensorFlow, exported to ONNX / TensorFlow.js             |
+| **Data Processing**  | Pandas, NumPy, BeautifulSoup                             |
+| **Frontend**         | JavaScript (Chrome Extension with DOM injection)         |
+| **Smart Formatting** | GPT-4.1-nano via Flask backend                           |
+| **Deployment**       | Docker + Google Cloud Platform (Cloud Run or App Engine) |
+
+<p>
+  <a href="https://www.tensorflow.org/"><img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" /></a>
+  <a href="https://onnx.ai/"><img src="https://img.shields.io/badge/ONNX-005CED?style=for-the-badge&logo=onnx&logoColor=white" /></a>
+  <a href="https://www.javascript.com/"><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" /></a>
+  <a href="https://www.google.com/intl/en_ca/colab/"><img src="https://img.shields.io/badge/Colab-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white" /></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" /></a>
+  <a href="https://cloud.google.com/"><img src="https://img.shields.io/badge/GCP-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" /></a>
+  <a href="https://pandas.pydata.org/"><img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" /></a>
+  <a href="https://www.crummy.com/software/BeautifulSoup/"><img src="https://img.shields.io/badge/BeautifulSoup-FFC107?style=for-the-badge" /></a>
+</p>
+
+---
+
+<p align="center">
+  ⭐️ <strong>Found this useful?</strong> — <a href="https://github.com/kristiandiana/justtheinstruction">Star this repo</a>  
+  <br />
+  📝 <strong>Help others discover it</strong> — <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn">Leave a review on the Chrome Web Store</a>
+</p>
