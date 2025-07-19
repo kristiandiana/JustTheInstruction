@@ -30,8 +30,8 @@ async function animateExtension(tabId, url) {
     await chrome.notifications.create("instruction-notification", {
       type: "basic",
       iconUrl: chrome.runtime.getURL("images/logobig.png"),
-      title: "Instructions Available!",
-      message: "Click to analyze this page",
+      title: "Just The Instructions Ready!",
+      message: "One click → Clean steps",
       priority: 2,
       requireInteraction: false,
       silent: false,

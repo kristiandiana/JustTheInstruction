@@ -968,7 +968,7 @@ async function toggleFloatingUI() {
   </div>
 `;
 
-          scoreLabel.textContent = `✅ JustTheInstructions AI finished`;
+          scoreLabel.textContent = `✅ Just The Instructions AI finished`;
         } else {
           if (instructionsContainer)
             instructionsContainer.style.display = "block";
