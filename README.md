@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="./extension/images/marquee.jpg" alt="JustTheInstruction Marquee"/>
+  <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn" title="Install from Chrome Web Store">
+    <img src="./extension/images/marquee.jpg" alt="JustTheInstruction Marquee"/>
+  </a>
 </p>
 
 <p align="center">
