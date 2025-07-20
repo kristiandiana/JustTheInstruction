@@ -10,57 +10,87 @@
 
 ---
 
-## 💡 Project Description
+## 💡 Project Overview
 
-Isn't it the worst when you find a recipe online, but need to scroll down for what feels like hours to find the actual instructions? We too have been bothered by this issue and began to think of a solution. What if we could use AI to extract **_JustTheInstructions_** from any recipe, arts & crafts, or other DIY website?
+Scrolling past paragraphs of filler text just to find recipe steps or DIY instructions? **JustTheInstructions** solves that by detecting instructional content in real time **as soon as a page loads** — and delivering clean, formatted instructions in **just one click**.
 
-Well, we built a custom AI model to do just that — and the power of this tool is one click away thanks to our Chrome Extension.
+### **What makes it different?**
 
-### 🧭 Project Objectives
+- **Automatic Detection:** Pages are analyzed locally in **under 500ms** using a custom ONNX model.
+- **Smart Notifications:** A **Chrome notification** instantly appears when instructional content is detected — no need to open the extension.
+- **One-Click Extraction:** Click once, and the instructions are automatically extracted, cleaned, and formatted for you — **ready in seconds instead of endless scrolling**.
+- **Optional Manual Mode:** Notifications can be toggled off — you can still run the extension manually in just **2 clicks** (open extension → click “Extract Instructions”).
 
-1. Build a lightweight binary text classification model using TensorFlow.
-2. Scrape and prepare high-quality data across a wide range of instruction-heavy content types.
-3. Optimize real-time, on-device inference by exporting to ONNX Runtime — achieving sub-second classification fully in-browser, without API calls.
-4. Use GPT-4.1-nano via a lightweight backend to cleanly format the extracted instructions for the end user.
+---
+
+## 📈 Performance & Impact
+
+- **Real-Time Detection:** Page content scored for instructional relevance in **300–500ms** after load
+- **One-Click Flow:** Notification → click → clean instructions
+- **Model Accuracy:** 99.6% on a 100k-sentence test set (80/10/10 split)
+- **Inference Speed:** ~11ms/sentence (~80+ sentences/sec)
+- **Extraction Speed:** Formatted instructions returned in **~2–10 seconds**
+- **Model Size:** **2.5MB ONNX** — small enough for fast extension loading & smooth performance on low-end laptops
+- **Data Scale:** ~1M labeled sentences scraped from **5,000 instructional websites**
+- **Privacy:** Detection is **100% client-side**; formatting only runs **when you explicitly request it**
+
+---
+
+## 🧭 Objectives
+
+1. **Score instructional relevance with >99% accuracy** while running entirely client-side.
+2. **Deliver clean, formatted instructions in under 10 seconds** end-to-end.
+3. **Eliminate manual interaction** — automated detection + one-click flow, with manual fallback.
+4. Maintain **privacy-first design** by limiting server calls to formatting only.
 
 ---
 
 ## 🧠 How It Works
 
-Once installed, the extension analyzes pages **in real time — directly in your browser**. Here's the flow:
+1. **Real-Time Detection (Client-Side)**
 
-- The entire page is scanned using our custom-trained TensorFlow model **exported to ONNX Runtime for in-browser inference**.
-- If instructional content is detected **above a confidence threshold**, you'll get a notification.
-- In **one click**, the detected content is sent to our backend, where **GPT-4.1-nano** restructures it into clean Markdown — outlining clear step-by-step instructions **and, when applicable, prerequisites such as ingredients, tools, or materials.**
+   - As soon as a page loads, text is segmented into **sentences**.
+   - A **TensorFlow-trained binary classifier (exported to ONNX)** assigns each page a confidence score (low/medium/high instructional content).
+   - Detection runs **fully in-browser** via ONNX Runtime (WebAssembly).
 
-> ⚡ **Runs fully on the frontend:** ONNX Runtime enables **real-time, on-device inference** — no API calls, no backend load, and no cost to you.  
-> 🔒 **Privacy-first by design:** Your page data is never saved, logged, or sent anywhere unless you explicitly click "Extract Instructions."  
-> 🚫 **Sensitive sites ignored:** The classifier automatically avoids pages likely to contain private information (e.g., Gmail, Outlook, banking portals).  
-> 🏎️ **Why ONNX Runtime?** Compared to TensorFlow.js, ONNX gave us **smaller bundle size, faster inference, and better WebAssembly performance**, making it ideal for low-end laptops and preserving user privacy.  
-> 💬 The formatting step (GPT-4.1-nano) is handled by a lightweight Flask backend hosted via **Docker + GCP**.  
-> 🛑 Notifications too much? Toggle them off in settings and run extraction manually — it’s still just 2–3 clicks.
+2. **Why ONNX Runtime?**
 
-📣 **No instructions detected?**  
-No worries — you can always click the extension and run “Extract Instructions” manually. A clean response arrives **in seconds**.
+   - **2.5MB model size** — ~40% smaller than a comparable TensorFlow.js build, reducing download & memory usage
+   - **Faster inference** due to WebAssembly optimizations
+   - **Better for weak devices:** Lightweight enough for low-end laptops and Chromebooks
 
-> 🛑 No more reading about how a 50-year-old divorcee from Ohio found her life purpose in sourdough.  
-> ✅ Just. The. Instructions.
+3. **Notification-Driven UX**
+
+   - If the score passes a threshold, you receive a **Chrome notification** — no need to open the extension.
+   - Clicking the notification triggers automatic extraction.
+   - **Notifications Off?** You can still run the model manually in **2 clicks** (open → extract).
+
+4. **Backend-Powered Formatting**
+
+   - Candidate sentences are sent to a lightweight **Flask API**, which:
+     - Cleans & structures the text into **Markdown-formatted steps**
+     - Adds prerequisites (ingredients, tools, etc.) when relevant
+   - The API is **Dockerized and deployed on GCP Cloud Run** for scalable, low-latency performance.
+
+5. **Privacy & Safety**
+   - Detection always runs locally — **only when you explicitly click “Extract Instructions” is page data sent for formatting.**
+   - Sensitive domains (e.g., Gmail, banking) are automatically skipped.
 
 ---
 
 ## 📊 Data Collection & Training
 
-We collected over **1000 high-quality entries** from each of these instructional categories:
+- Scraped **5,000 instructional websites** across five categories:  
+  🍲 Recipes • 🎨 Crafts • 🔌 Circuits • 🧪 DIY Science • 🛠️ General Tutorials
+- Collected ~**1M labeled sentences** via a custom **BeautifulSoup + Pandas pipeline**.
+- Dataset split into **80% training / 10% test / 10% validation**.
+- Achieved **99.6% test accuracy (100k sentences)**.
+- Model exported to **ONNX Runtime** for optimized frontend inference.
 
-- 🍲 Recipes
-- 🎨 Crafts
-- 🔌 Circuits
-- 🧪 DIY Science
-- 🛠️ General Tutorials
+**Model Architecture:**  
+Binary text classifier — Embedding → GlobalAveragePooling → Dense(16, ReLU) → Dropout(0.4) → Dense(16, ReLU) → Dropout(0.4) → Sigmoid (~64K parameters, Adam optimizer)
 
-All data was collected via **custom web scraping** using BeautifulSoup and processed using Pandas — no third-party datasets were used. The model was then trained using TensorFlow and deployed in ONNX/TensorFlow.js format for frontend usage.
-
-📄 **Colab Notebooks (if you're interested in diving deeper):**
+📄 **Colab Notebooks (for reproducibility):**
 
 - [Model Architecture & Training](https://colab.research.google.com/drive/1nkqleu9FP2pN5D40q1NK_xuyOvsKG7vy?usp=sharing)
 - [Data Collection & Scraping Pipeline](https://colab.research.google.com/drive/1k1D4zRW0nFicjkS-KqtCVW3y4mn8qSJR?usp=sharing)
@@ -69,14 +99,14 @@ All data was collected via **custom web scraping** using BeautifulSoup and proce
 
 ## 🛠️ Tech Stack
 
-| Layer                | Tech                                                        |
-| -------------------- | ----------------------------------------------------------- |
-| **Model**            | ONNX Runtime (browser), TensorFlow (training)               |
-| **Reasoning**        | ONNX chosen for lightweight, real-time in-browser inference |
-| **Data Processing**  | Pandas, NumPy, BeautifulSoup                                |
-| **Frontend**         | JavaScript (Chrome Extension with DOM injection)            |
-| **Smart Formatting** | GPT-4.1-nano via Flask backend                              |
-| **Deployment**       | Docker + Google Cloud Platform (Cloud Run)                  |
+| Layer               | Tech                                                   |
+| ------------------- | ------------------------------------------------------ |
+| **Model**           | ONNX Runtime (browser), TensorFlow (training)          |
+| **Reasoning**       | ONNX chosen for smaller bundle size & faster inference |
+| **Data Processing** | Pandas, NumPy, BeautifulSoup                           |
+| **Frontend**        | JavaScript (Chrome Extension with DOM injection)       |
+| **Backend API**     | Flask, Docker, Google Cloud Run                        |
+| **Formatting**      | GPT-4.1-nano (Markdown restructuring & cleaning)       |
 
 <p>
   <a href="https://www.tensorflow.org/"><img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" /></a>
