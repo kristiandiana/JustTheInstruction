@@ -129,7 +129,7 @@ function createFloatingUI(pageTitle, autoExtract = false) {
  <div id="floating-container" style="position: fixed; top: 40px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 56rem; background-color: white; padding: 0; border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #eaeaea; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; z-index: 2147483647; max-height: 80vh; overflow-y: auto;">
       <div class="header-section" style="background-color: #f0f7ff; padding: 1.25rem 1.5rem; border-bottom: 1px solid #e5e7eb; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-  <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0; color: black;">Just the Instructions</h2>
+  <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0; color: black;">Just The Instructions</h2>
   <div style="display: flex; gap: 0.25rem; align-items: center;">
   <div style="position: relative; display: flex; align-items: center;">
     <button id="settings-btn"
