@@ -14,7 +14,7 @@
 
 ## 💡 Project Overview
 
-Scrolling past paragraphs of filler text just to find recipe steps or DIY instructions? **JustTheInstructions** solves that by detecting instructional content in real time **as soon as a page loads** — and delivering clean, formatted instructions in **just one click**.
+Scrolling past paragraphs of filler text just to find recipe steps or DIY instructions? **JustTheInstructions** is a Google Chrome Extension which solves this issue by detecting instructional content in real time **as soon as a page loads** — delivering clean, formatted instructions in **just one click**.
 
 <p align="center">
   <img src="./extension/images/demo.gif" alt="JustTheInstructions Demo Gif"/> 
