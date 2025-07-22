@@ -1,9 +1,9 @@
 {
   "name": "Just The Instructions",
   "manifest_version": 3,
+  "description": "One click to extract clean instructions from any page — no more scrolling through ads or life stories.",
+  "author": "Kristian Diana and Iain Macdonald",
   "version": "3.0",
-  "description": "Filters recipe websites to just show the instructions",
-  "author": "Kristian and Iain",
   "icons": {
     "16": "images/logobig.png",
     "48": "images/logobig.png",
