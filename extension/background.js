@@ -30,19 +30,19 @@ async function animateExtension(tabId, url) {
     await chrome.notifications.create("instruction-notification", {
       type: "basic",
       iconUrl: chrome.runtime.getURL("images/logobig.png"),
-      title: "Just The Instructions Ready!",
-      message: "One click → Clean steps",
-      priority: 2,
+      title: "✨ Just The Instructions Ready!",
+      message: "Click here for clean steps",
+      priority: 1,
       requireInteraction: false,
       silent: false,
       buttons: [],
       isClickable: true,
     });
 
-    //Auto-dismiss notification after 5 seconds
+    //Auto-dismiss notification after 6 seconds
     setTimeout(() => {
       chrome.notifications.clear("instruction-notification");
-    }, 5000);
+    }, 6000);
   } catch (error) {
   } finally {
     isAnimating = false;
@@ -99,8 +99,48 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       });
     }
+  } else if (message.action === "callAPI") {
+    // Handle API call from content script to avoid CORS issues
+    handleAPICall(message.data)
+      .then((result) => {
+        sendResponse({ success: true, data: result });
+      })
+      .catch((error) => {
+        sendResponse({ success: false, error: error.message });
+      });
+    return true; // Keep the message channel open for async response
   }
 });
+
+// Function to handle API calls from content script
+async function handleAPICall(requestData) {
+  try {
+    // api route: https://instructions-api-2-561360507997.us-central1.run.app/generate
+    const response = await fetch(
+      "https://instructions-api-2-561360507997.us-central1.run.app/generate",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData),
+      }
+    );
+
+    // Handle 429 (rate limit) as a valid response, not an error
+    if (response.status === 429) {
+      const data = await response.json();
+      return { response: data, status: response.status };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return { response: data, status: response.status };
+  } catch (error) {
+    throw error;
+  }
+}
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get("userId", (data) => {

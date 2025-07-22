@@ -17,7 +17,12 @@ def get_openai_api_key():
 
 
 app = Flask(__name__)
-CORS(app)  # 🔒 Replace after testing
+EXTENSION_ID = "bdahkfnlnaomfogokbmeehdibpchagpg"  # replace with yours
+CORS(app, resources={
+    r"/generate": {
+        "origins": [f"chrome-extension://{EXTENSION_ID}"]
+    }
+})
 client = OpenAI(api_key=get_openai_api_key())
 # In-memory usage tracker: { userId: { 'date': 'YYYY-MM-DD', 'count': int } }
 usage_tracker = {}
@@ -25,6 +30,8 @@ usage_tracker = {}
 # ------------------------
 # Routes
 # ------------------------
+
+
 @app.route("/generate", methods=["POST"])
 def generate():
 

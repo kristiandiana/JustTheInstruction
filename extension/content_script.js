@@ -858,20 +858,21 @@ async function toggleFloatingUI() {
         // Get user ID
         const { userId } = await chrome.storage.local.get("userId");
 
-        // Call API "https://instructions-api-2-561360507997.us-central1.run.app/generate"
-        const response = await fetch(
-          "https://instructions-api-2-561360507997.us-central1.run.app/generate", // Use local API for development
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              userId,
-              prompt: `Extract instructions:\n${pageText}`,
-            }),
-          }
-        );
+        // Call API through background script to avoid CORS issues
+        const apiResponse = await chrome.runtime.sendMessage({
+          action: "callAPI",
+          data: {
+            userId,
+            prompt: `Extract instructions:\n${pageText}`,
+          },
+        });
 
-        const data = await response.json(); // Process response
+        if (!apiResponse.success) {
+          throw new Error(apiResponse.error);
+        }
+
+        const response = { status: apiResponse.data.status };
+        const data = apiResponse.data.response;
         if (gptSpinner) {
           // Smooth fadeout for the spinner
           gptSpinner.style.opacity = "1";
