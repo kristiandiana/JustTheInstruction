@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/just-the-instructions/lfoilkbebjommkenfehehofgoiopmenn" title="Install from Chrome Web Store">
-    <img src="./extension/images/marquee.jpg" alt="JustTheInstruction Marquee"/>
+    <img src="./extension/images/marquee.jpg" alt="JustTheInstructions Marquee"/>
   </a>
 </p>
 
@@ -15,6 +15,10 @@
 ## 💡 Project Overview
 
 Scrolling past paragraphs of filler text just to find recipe steps or DIY instructions? **JustTheInstructions** solves that by detecting instructional content in real time **as soon as a page loads** — and delivering clean, formatted instructions in **just one click**.
+
+<p align="center">
+  <img src="./extension/images/demo.gif" alt="JustTheInstructions Demo Gif"/> 
+</p>
 
 ### **What makes it different?**
 
